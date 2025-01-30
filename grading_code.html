@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-2xl">
+        <h1 class="text-3xl font-bold text-center mb-6">GPA Calculator</h1>
+        <div class="flex justify-center mb-4">
+            <button onclick="showSGPA()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg mx-2">Calculate SGPA</button>
+            <button onclick="showCGPA()" class="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg mx-2">Calculate CGPA</button>
+        </div>
+        
+        <div id="sgpa-section" class="hidden">
+            <h2 class="text-xl font-semibold mb-3">SGPA Calculation</h2>
+            <div id="course-container"></div>
+            <button onclick="addCourse()" class="mt-2 px-3 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg">Add Course</button>
+            <button onclick="calculateSGPA()" class="mt-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg">Calculate SGPA</button>
+            <p id="sgpa-result" class="mt-4 text-lg font-semibold"></p>
+        </div>
+
+        <div id="cgpa-section" class="hidden">
+            <h2 class="text-xl font-semibold mb-3">CGPA Calculation</h2>
+            <div id="semester-container"></div>
+            <button onclick="addSemester()" class="mt-2 px-3 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg">Add Semester</button>
+            <button onclick="calculateCGPA()" class="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg">Calculate CGPA</button>
+            <p id="cgpa-result" class="mt-4 text-lg font-semibold"></p>
+        </div>
+
+        <button onclick="refreshPage()" class="mt-4 px-4 py-2 bg-gray-500 hover:bg-gray-600 rounded-lg">Reset</button>
+    </div>
+
+    <script>
+        function showSGPA() {
+            document.getElementById('sgpa-section').classList.remove('hidden');
+            document.getElementById('cgpa-section').classList.add('hidden');
+        }
+
+        function showCGPA() {
+            document.getElementById('cgpa-section').classList.remove('hidden');
+            document.getElementById('sgpa-section').classList.add('hidden');
+        }
+
+        function addCourse() {
+            let container = document.getElementById("course-container");
+            let div = document.createElement("div");
+            div.classList.add("flex", "gap-2", "mb-2", "items-center");
+            div.innerHTML = `
+                <input type="number" placeholder="Credits" class="p-2 text-black rounded-lg w-1/3" required>
+                <select class="p-2 text-black rounded-lg w-1/3">
+                    <option value="4.00">A+</option>
+                    <option value="4.00">A</option>
+                    <option value="3.67">A-</option>
+                    <option value="3.33">B+</option>
+                    <option value="3.00">B</option>
+                    <option value="2.67">B-</option>
+                    <option value="2.33">C+</option>
+                    <option value="2.00">C</option>
+                    <option value="1.67">C-</option>
+                    <option value="1.33">D+</option>
+                    <option value="1.00">D</option>
+                    <option value="0.00">F</option>
+                </select>
+                <button onclick="this.parentElement.remove()" class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function calculateSGPA() {
+            let courses = document.querySelectorAll("#course-container div");
+            let totalCredits = 0, weightedSum = 0;
+            courses.forEach(course => {
+                let credit = parseFloat(course.children[0].value) || 0;
+                let grade = parseFloat(course.children[1].value) || 0;
+                totalCredits += credit;
+                weightedSum += credit * grade;
+            });
+            let sgpa = totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : 0;
+            document.getElementById("sgpa-result").innerText = "SGPA: " + sgpa;
+        }
+
+        function addSemester() {
+            let container = document.getElementById("semester-container");
+            let div = document.createElement("div");
+            div.classList.add("flex", "gap-2", "mb-2", "items-center");
+            div.innerHTML = `
+                <input type="number" placeholder="SGPA" class="p-2 text-black rounded-lg w-1/3" required>
+                <input type="number" placeholder="Total Credits" class="p-2 text-black rounded-lg w-1/3" required>
+                <button onclick="this.parentElement.remove()" class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function calculateCGPA() {
+            let semesters = document.querySelectorAll("#semester-container div");
+            let totalCredits = 0, weightedSum = 0;
+            semesters.forEach(semester => {
+                let sgpa = parseFloat(semester.children[0].value) || 0;
+                let credits = parseFloat(semester.children[1].value) || 0;
+                totalCredits += credits;
+                weightedSum += sgpa * credits;
+            });
+            let cgpa = totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : 0;
+            document.getElementById("cgpa-result").innerText = "CGPA: " + cgpa;
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
